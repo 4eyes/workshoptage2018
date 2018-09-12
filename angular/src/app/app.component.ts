@@ -20,7 +20,17 @@ export class AppComponent implements OnInit {
 
   private availablePenguins;
   private myPenguins;
+  private penguinsForSale;
   private currentUser;
+
+  private penguinForSale;
+  private addForSaleInProgress = false;
+
+  private soldPenguin;
+  private saleInProgress = false;
+
+  private penguinOfferdFor;
+  private makeOfferInProgress = false;
 
   private buyInProgress = false;
   private boughtPenguin;
@@ -65,6 +75,9 @@ export class AppComponent implements OnInit {
               return this.getAvailablePenguins();
             })
             .then(() => {
+                return this.getPenguinsForSale();
+            })
+            .then(() => {
               return this.getMyPenguins();
             });
         }
@@ -80,6 +93,9 @@ export class AppComponent implements OnInit {
       .then(() => {
         this.congaName = this.CONGAS[this.getRandomIntInclusive(0, this.CONGAS.length - 1)];
         return this.getAvailablePenguins();
+      })
+      .then(() => {
+          return this.getPenguinsForSale();
       })
       .then(() => {
         return this.getMyPenguins();
@@ -108,7 +124,21 @@ export class AppComponent implements OnInit {
   }
 
   getMyPenguins() {
-    this.myPenguins = this.restService.getMyPenguins();
+    return this.restService.getMyPenguins()
+      .then((penguins) => {
+        for (let key of Object.keys(penguins)) {
+            let penguin = penguins[key];
+            this.restService.getPenguinOffer(penguin.name)
+                .then((offers) => {
+                  penguin.offer = offers[0];
+                })
+        }
+        this.myPenguins = penguins;
+      });
+  }
+
+  getPenguinsForSale() {
+      this.penguinsForSale = this.restService.getPenguinsForSale();
   }
 
   buyPenguin(penguinId) {
@@ -119,11 +149,71 @@ export class AppComponent implements OnInit {
         return this.getAvailablePenguins();
       })
       .then(() => {
+          return this.getPenguinsForSale();
+      })
+      .then(() => {
         return this.getMyPenguins();
       })
       .then(() => {
         this.boughtPenguin = null;
         this.buyInProgress = false;
+      });
+  }
+
+  sellPenguin(penguinId, newOwner) {
+      this.saleInProgress = true;
+      this.soldPenguin = penguinId;
+      return this.restService.sellPenguin(penguinId, newOwner)
+          .then(() => {
+              return this.getAvailablePenguins();
+          })
+          .then(() => {
+              return this.getPenguinsForSale();
+          })
+          .then(() => {
+              return this.getMyPenguins();
+          })
+          .then(() => {
+              this.soldPenguin = null;
+              this.saleInProgress = false;
+          });
+  }
+
+  makeOffer(penguinId, unit, collectorId) {
+      this.makeOfferInProgress = true;
+      this.penguinOfferdFor = penguinId;
+    return this.restService.makeOffer(penguinId, unit, collectorId)
+      .then(() => {
+        return this.getAvailablePenguins();
+      })
+      .then(() => {
+          return this.getPenguinsForSale();
+      })
+      .then(() => {
+          return this.getMyPenguins();
+      })
+      .then(() => {
+          this.penguinOfferdFor = null;
+          this.makeOfferInProgress = false;
+      });
+  }
+
+  addPenguinForSale(penguinId) {
+    this.addForSaleInProgress = true;
+    this.penguinForSale = penguinId;
+    return this.restService.addPenguinForSale(penguinId)
+      .then(() => {
+          return this.getAvailablePenguins();
+      })
+      .then(() => {
+          return this.getPenguinsForSale();
+      })
+      .then(() => {
+          return this.getMyPenguins();
+      })
+      .then(() => {
+          this.penguinForSale = null;
+          this.addForSaleInProgress = false;
       });
   }
 

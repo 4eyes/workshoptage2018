@@ -14,3 +14,17 @@ query myPenguins{
       SELECT org.collectable.penguin.Penguin
           WHERE (owner!='resource:org.collectable.penguin.Collector#WHOLESALER')
 }
+
+query penguinsForSale {
+  description: "Select all penguins that are for sale"
+  statement:
+      SELECT org.collectable.penguin.Penguin
+          WHERE (isForSale == true)
+}
+
+query penguinOffer {
+  description: "Select the best offer for a penguin"
+  statement:
+      SELECT org.collectable.penguin.Offer
+          WHERE (penguin == _$penguin) ORDER BY [unit DESC] LIMIT 1
+}

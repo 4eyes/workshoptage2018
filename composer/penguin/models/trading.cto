@@ -6,6 +6,7 @@ namespace org.collectable.penguin
 asset Penguin identified by name {
     o String name
     o String description
+    o Boolean isForSale default=false optional
     --> Collector owner optional
 }
 
@@ -19,6 +20,22 @@ participant Regulator identified by regId {
   	o String regId
     o String firstName
     o String lastName
+}
+
+transaction AddForSale {
+    --> Penguin penguin
+}
+
+asset Offer identified by offerId {
+    o String offerId
+    o Integer unit
+    --> Penguin penguin
+    --> Collector collector
+}
+
+transaction Sell {
+    --> Penguin penguin
+    --> Collector newOwner
 }
 
 transaction Trade {
