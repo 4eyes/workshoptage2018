@@ -61,7 +61,7 @@ add the clientID and clientSecret values to COMPOSER_PROVIDERS object in fabric/
 ### Angular
 - $ cd angular/
 - $ npm install
-- $ ng start
+- $ npm start
 - Open http://localhost:4200/ on your browser
 - Click on "Sign in with github"
 - Enter the user name and password of your github account and sign in
