@@ -68,8 +68,29 @@ export class RestService {
     return this.httpClient.get(this.restApiMultiUser + 'queries/availablePenguins', {withCredentials: true}).toPromise();
   }
 
+  getPenguinOffer(penguinId) {
+    return this.httpClient.get(this.restApiMultiUser + 'queries/penguinOffer', {withCredentials: true, params: {penguin: 'resource:org.collectable.penguin.Penguin#' + penguinId}}).toPromise();
+  }
+
   getMyPenguins() {
     return this.httpClient.get(this.restApiMultiUser + 'queries/myPenguins', {withCredentials: true}).toPromise();
+  }
+
+  getPenguinsForSale() {
+    return this.httpClient.get(this.restApiMultiUser + 'queries/penguinsForSale', {withCredentials: true}).toPromise();
+  }
+
+  makeOffer(penguinId, unit, collectorId) {
+      let offerId = Math.floor(Date.now() / 1000);
+      const offerDetails = {
+          $class: 'org.collectable.penguin.Offer',
+          offerId: offerId,
+          unit: unit,
+          penguin: 'resource:org.collectable.penguin.Penguin#' + penguinId,
+          collector: 'resource:' + collectorId
+      };
+
+      return this.httpClient.post(this.restApiMultiUser + 'org.collectable.penguin.Offer', offerDetails, {withCredentials: true}).toPromise();
   }
 
   buyPenguin(penguinId, currentUser) {
@@ -80,5 +101,24 @@ export class RestService {
     };
 
     return this.httpClient.post(this.restApiMultiUser + 'org.collectable.penguin.Trade', transactionDetails, {withCredentials: true}).toPromise();
+  }
+
+    sellPenguin(penguinId, newOwner) {
+        const transactionDetails = {
+            $class: 'org.collectable.penguin.Sell',
+            penguin: 'resource:org.collectable.penguin.Penguin#' + penguinId,
+            newOwner: newOwner
+        };
+
+        return this.httpClient.post(this.restApiMultiUser + 'org.collectable.penguin.Sell', transactionDetails, {withCredentials: true}).toPromise();
+    }
+
+  addPenguinForSale(penguinId) {
+      const transactionDetails = {
+          $class: 'org.collectable.penguin.AddForSale',
+          penguin: 'resource:org.collectable.penguin.Penguin#' + penguinId,
+      };
+
+      return this.httpClient.post(this.restApiMultiUser + 'org.collectable.penguin.AddForSale', transactionDetails, {withCredentials: true}).toPromise();
   }
 }

@@ -10,6 +10,15 @@ rule Wholesaler {
   action: ALLOW
 }
 
+rule ForSale {
+  description: "Allow collectors to see the assets that are for sale"
+  participant: "org.collectable.penguin.Collector"
+  operation: READ
+  resource(v): "org.collectable.penguin.Penguin"
+  condition: (v.isForSale == true )
+  action: ALLOW
+}
+
 rule CollectorAssets {
   description: "Allow collectors to see the assets that they own"
   participant(t): "org.collectable.penguin.Collector"
@@ -27,11 +36,35 @@ rule PenguinsView {
   action: ALLOW
 }
 
+rule Offers {
+  description: "allow operation on offers"
+  participant: "org.collectable.penguin.Collector"
+  operation: ALL
+  resource: "org.collectable.penguin.Offer"
+  action: ALLOW
+}
+
 rule MakeTrades_1 {
   description: "Allow collectors to submit trades"
   participant: "org.collectable.penguin.Collector"
   operation: ALL
   resource: "org.collectable.penguin.Trade"
+  action: ALLOW
+}
+
+rule MakeForSale {
+  description: "Allow collectors to add their own penguins for sale"
+  participant: "org.collectable.penguin.Collector"
+  operation: ALL
+  resource: "org.collectable.penguin.AddForSale"
+  action: ALLOW
+}
+
+rule SellPenguin {
+  description: "Allow collectors change the owner"
+  participant: "org.collectable.penguin.Collector"
+  operation: ALL
+  resource: "org.collectable.penguin.Sell"
   action: ALLOW
 }
 

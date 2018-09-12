@@ -38,6 +38,50 @@ function tradePenguin(trade) {
         });
 }
 
+
+/**
+ * Sell the Penguin
+ * @param {org.collectable.penguin.Sell} tx - the trade to be processed
+ * @transaction
+ */
+function sellPenguin(tx) {
+
+    var oldOwner = tx.penguin.owner;
+
+    // set the new owner of the penguin
+    tx.penguin.owner = tx.newOwner;
+    tx.penguin.isForSale = false;
+    return getAssetRegistry('org.collectable.penguin.Penguin')
+        .then(function (assetRegistry) {
+
+            // emit a notification that a trade has occurred
+            var tradeNotification = getFactory().newEvent('org.collectable.penguin', 'TradeNotification');
+            tradeNotification.penguin = tx.penguin;
+            tradeNotification.oldOwner = oldOwner;
+            tradeNotification.newOwner = tx.newOwner;
+            emit(tradeNotification);
+
+            // persist the state of the commodity
+            return assetRegistry.update(tx.penguin);
+        });
+}
+
+
+/**
+ * Make the penguin for sale
+ * @param {org.collectable.penguin.AddForSale} tx - the transaction to be processed
+ * @transaction
+ */
+function addForSale(tx) {
+
+    // set the new owner of the commodity
+    tx.penguin.isForSale = true;
+    return getAssetRegistry('org.collectable.penguin.Penguin')
+        .then(function (assetRegistry) {
+            return assetRegistry.update(tx.penguin);
+        });
+}
+
 /**
  * Creates some assets
  * @param {org.collectable.penguin._demoSetup} demo - demoSetup

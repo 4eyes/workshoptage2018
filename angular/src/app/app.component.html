@@ -84,12 +84,69 @@
     </tr>
   </table>
 
-  <h2>My Penguins</h2>
+  <h2>Penguins For Sale</h2>
   <table>
-    <tr *ngFor="let penguin of myPenguins | async">
+    <tr *ngFor="let penguin of penguinsForSale | async">
       <td>{{penguin.name}}</td>
       <td>{{penguin.description}}</td>
       <td><img src="assets/images/penguins/{{penguin.name}}.JPG" height="50px" width="50px"></td>
+      <td>Units: <input type="number" value="1" min="1" #unit></td>
+      <td>
+        <button *ngIf="penguin.owner != this.currentUser" type="button"
+                class="primary" (click)="makeOffer(penguin.name, unit.value, this.currentUser)">
+          <div *ngIf="!makeOfferInProgress || makeOfferInProgress && penguin.name!==penguinOfferdFor">
+            <span>Make Offer to buy</span>
+          </div>
+          <div *ngIf="makeOfferInProgress && penguin.name===penguinOfferdFor" class="ibm-spinner-indeterminate small loop">
+            <div class="loader">
+              <svg class="circular" viewBox="25 25 50 50">
+                <circle class="circle-path" cx="50" cy="50" r="20"/>
+              </svg>
+            </div>
+          </div>
+        </button>
+      </td>
+    </tr>
+  </table>
+
+  <h2>My Penguins</h2>
+  <table>
+    <tr *ngFor="let penguin of myPenguins">
+      <td>{{penguin.name}}</td>
+      <td>{{penguin.description}}</td>
+      <td><img src="assets/images/penguins/{{penguin.name}}.JPG" height="50px" width="50px"></td>
+      <td *ngIf="penguin.isForSale == true && !penguin.offer">Status: for sale</td>
+      <td *ngIf="penguin.offer && penguin.isForSale">Status: has offer of {{penguin.offer.unit}} units</td>
+      <td *ngIf="penguin.offer && penguin.isForSale">
+        <button type="button"
+                class="primary" (click)="sellPenguin(penguin.name, penguin.offer.collector)">
+          <div *ngIf="!saleInProgress || saleInProgress && penguin.name!==soldPenguin">
+            <span>Sell</span>
+          </div>
+          <div *ngIf="saleInProgress && penguin.name===soldPenguin" class="ibm-spinner-indeterminate small loop">
+            <div class="loader">
+              <svg class="circular" viewBox="25 25 50 50">
+                <circle class="circle-path" cx="50" cy="50" r="20"/>
+              </svg>
+            </div>
+          </div>
+        </button>
+      </td>
+      <td *ngIf="penguin.isForSale != true">
+        <button type="button"
+                class="primary" (click)="addPenguinForSale(penguin.name)">
+          <div *ngIf="!addForSaleInProgress || addForSaleInProgress && penguin.name!==penguinForSale">
+            <span>Add for sale</span>
+          </div>
+          <div *ngIf="addForSaleInProgress && penguin.name===penguinForSale" class="ibm-spinner-indeterminate small loop">
+            <div class="loader">
+              <svg class="circular" viewBox="25 25 50 50">
+                <circle class="circle-path" cx="50" cy="50" r="20"/>
+              </svg>
+            </div>
+          </div>
+        </button>
+      </td>
     </tr>
   </table>
 </section>
